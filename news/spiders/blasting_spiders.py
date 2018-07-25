@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
-import scrapy
+import scrapy, re
 from scrapy.utils.markup import remove_tags,remove_tags_with_content,replace_escape_chars
 
 class BlastingSpider(scrapy.Spider):
 
     name = "blasting"
-    start_urls = ['https://br.blastingnews.com/brasil/p/2/']
+    start_urls = ['https://br.blastingnews.com/brasil/p/2/',
+    'https://br.blastingnews.com/economia/p/2/',
+    'https://br.blastingnews.com/cultura/p/2/',
+    'https://br.blastingnews.com/mundo/p/2/',
+    'https://br.blastingnews.com/politica/p/2/',
+    'https://br.blastingnews.com/tecnologia/p/2/']
 
     def parse(self,response):
         for post in response.css('div.content-news'):
@@ -22,7 +27,8 @@ class BlastingSpider(scrapy.Spider):
         subtitle = response.css("h2.title-h2::text").extract_first()
         article =  remove_tags_with_content(response.css("div.article-body.p402_premium.template-a").extract_first(),which_ones=('div','script'))
         article = remove_tags(article)
-        article = replace_escape_chars(article, which_ones = ('\n')).strip()
+        article = replace_escape_chars(article, which_ones = ('\n'))
+        article = re.sub(r'http\S+','', article).strip()
         yield {
             'article': article,
             'subtitle': subtitle,

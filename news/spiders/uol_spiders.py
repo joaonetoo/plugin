@@ -2,7 +2,7 @@
 from scrapy.spiders import SitemapSpider
 from scrapy.utils.markup import remove_tags,remove_tags_with_content
 from lxml import etree
-import requests
+import requests,re
 from datetime import date,datetime
 
 class UolSpider(SitemapSpider):
@@ -11,8 +11,7 @@ class UolSpider(SitemapSpider):
     
     def get_urls():
 
-        def date_calculate(dateSitemap, format="%Y-%m-%d"):
-            
+        def date_calculate(dateSitemap, format="%Y-%m-%d"):    
             dateNow = date.today()
             dateSitemap = datetime.strptime(dateSitemap, format).date()
             return abs((dateNow - dateSitemap).days)
@@ -38,7 +37,7 @@ class UolSpider(SitemapSpider):
     def parse(self,response):
 
         have_image = response.css("div.imagem-representativa").extract_first()
-
+        
         if have_image :
             text = remove_tags_with_content(response.css("div#texto").extract_first(),which_ones=("div","script",))
             body_article = remove_tags(text)
@@ -46,10 +45,17 @@ class UolSpider(SitemapSpider):
             text = remove_tags_with_content(response.css("div#texto").extract_first(),which_ones=("script",))
             body_article = remove_tags(text)
 
+        dateTime = response.css("span.color1::text").extract_first()
+        
+        if dateTime:
+            date = dateTime.split('-')[0].strip()
+        else:
+            date = None
+
         yield {
             'title': response.css("div.header > h1::text").extract_first(),
             'article': body_article,
-            'dateTime': response.css("span.color1::text").extract_first(),
+            'date': date,
             'link': response.url
 
         }
