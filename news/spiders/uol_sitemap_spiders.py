@@ -1,27 +1,40 @@
 # -*- coding: utf-8 -*-
-import scrapy,re
+from scrapy.spiders import SitemapSpider
 from scrapy.utils.markup import remove_tags,remove_tags_with_content
+from lxml import etree
+import requests,re
 from datetime import date,datetime
 
-class UolSpider(scrapy.Spider):
-    name = "uol"
-    start_urls =['https://noticias.uol.com.br/noticias']
+class UolSitemMapSpider(SitemapSpider):
+
+    name = "uol_site_map"
+    
+    def get_urls():
+
+        def date_calculate(dateSitemap, format="%Y-%m-%d"):    
+            dateNow = date.today()
+            dateSitemap = datetime.strptime(dateSitemap, format).date()
+            return abs((dateNow - dateSitemap).days)
+
+        days_for_scrapy = 60
+        sitemapXml = []
+        request = requests.get("https://noticias.uol.com.br/sitemap/index.xml")
+        all_sitemaps = etree.fromstring(request.content)
+        
+        for xml in all_sitemaps:
+            children = xml.getchildren()
+            sitemapXml.append([children[0].text,children[1].text])
+
+        urls = []
+        
+        for sitemap in sitemapXml:
+            if date_calculate(sitemap[1]) <= days_for_scrapy:
+                urls.append(sitemap[0])
+        return urls
+
+    sitemap_urls = get_urls()
 
     def parse(self,response):
-        
-        domain = "https://noticias.uol.com.br/"
-
-        for post in response.css('ul.viewport > li' ):
-            link_notice = post.css("a::attr(href)").extract_first()
-            if re.search(domain, link_notice):
-                yield response.follow(link_notice, self.parse_news)
-
-        next_page = response.css('div.filtro-paginacao > a.nav.next::attr(href)').extract_first()
-        if next_page is not None:
-            yield response.follow(next_page, self.parse)
-
-
-    def parse_news(self,response):
 
         have_image = response.css("div.imagem-representativa").extract_first()
         

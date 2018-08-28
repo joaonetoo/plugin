@@ -22,10 +22,15 @@ class BlastingSpider(scrapy.Spider):
             yield response.follow(next_page, self.parse)
     
     def parse_news(self,response):
-        dateTime = response.css("div.content-time-published.margin .time-modified.margin::text").extract_first()
+        date = response.css("div.content-time-published.margin .time-modified.margin::text").extract_first()
         title = response.css("span#id-blasting-tv-masthead-video-title::text").extract_first()
         subtitle = response.css("h2.title-h2::text").extract_first()
-        article =  remove_tags_with_content(response.css("div.article-body.p402_premium.template-a").extract_first(),which_ones=('div','script'))
+        
+        try:
+            article =  remove_tags_with_content(response.css("div.article-body.p402_premium.template-a").extract_first(),which_ones=('div','script'))
+        except:
+            article =  remove_tags_with_content(response.css("div#article-body-p1").extract_first(),which_ones=('div','a','script'))
+
         article = remove_tags(article)
         article = replace_escape_chars(article, which_ones = ('\n'))
         article = re.sub(r'http\S+','', article).strip()
@@ -33,6 +38,7 @@ class BlastingSpider(scrapy.Spider):
             'article': article,
             'subtitle': subtitle,
             'title': title,
-            'dateTime': dateTime,
-            'link': response.url
+            'date': date,
+            'link': response.url,
+            'website': 'blasting'
         }

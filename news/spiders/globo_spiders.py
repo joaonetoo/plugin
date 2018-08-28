@@ -4,7 +4,7 @@ from scrapy.utils.markup import remove_tags
 
 class GloboSpider(scrapy.Spider):
     name = "globo"
-    start_urls =['https://g1.globo.com/']
+    start_urls =['https://g1.globo.com']
 
     def parse(self,response):
         for post in response.css('div.bastian-feed-item'):
@@ -35,6 +35,7 @@ class GloboSpider(scrapy.Spider):
             'subtitle': response.css("h2.content-head__subtitle::text").extract_first(),
             'title': response.css("h1.content-head__title::text").extract_first(),
             'date': date,
-            'link': response.url
+            'link': response.url,
+            'website': 'globo'
         }
 
