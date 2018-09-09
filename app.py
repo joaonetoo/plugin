@@ -1,5 +1,5 @@
+# encoding=utf8
 from flask import Flask, jsonify,request, Response
-
 from flask_cors import CORS
 import gensim, nltk, re, json, os
 from gensim import corpora,similarities, models
