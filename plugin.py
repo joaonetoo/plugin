@@ -1,4 +1,4 @@
-# encoding=utf8
+# -*- coding: utf-8 -*-
 from flask import Flask, jsonify,request, Response
 from flask_cors import CORS
 import gensim, nltk, re, json, os
@@ -104,7 +104,8 @@ def get_notices():
         os.system("scrapy crawl notice_uol -a notice=%s -o notice.jl"%url) 
 
     with open('notice.jl','r') as f:
-        notice = json.load(f)
+        for line in f:
+            notice = json.loads(line)
     body_notice = [re.sub('\xa0','',notice['article'])]
 
     documents_notice_without_stopwords = [[stemmer.stem(remover_combinantes(w.lower())) for w in word_tokenize(text) if w.lower() not in stopwords] 
@@ -126,4 +127,4 @@ def get_notices():
     return jsonify({'url': results})
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0")
