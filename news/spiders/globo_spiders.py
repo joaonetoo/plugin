@@ -4,16 +4,41 @@ from scrapy.utils.markup import remove_tags
 
 class GloboSpider(scrapy.Spider):
     name = "globo"
-    start_urls =['https://g1.globo.com']
+    start_urls =[]
+    custom_settings = {
+        # https://github.com/alecxe/scrapy-fake-useragent
+        "RANDOM_UA_PER_PROXY": True,
+        # Retry many times since proxies often fail
+        "RETRY_TIMES": 10,
+        # Retry on most error codes since proxies fail for different reasons
+        "RETRY_HTTP_CODES": [500, 503, 504, 400, 403, 404, 408],
+
+        "DOWNLOADER_MIDDLEWARES": {
+            'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+            'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
+            'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+            'scrapy_proxies.RandomProxy': 100,
+            'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
+
+        # https://github.com/aivarsk/scrapy-proxies
+        },
+        "PROXY_LIST": '/home/joao/Documentos/notices/scrapy-noticias/list.txt',
+        "PROXY_MODE": 0
+    }
+    def __init__(self):
+        super(GloboSpider, self).__init__()
+
+        for i in range(1500, 3500):
+            self.start_urls.append('http://g1.globo.com/index/feed/pagina-' + str(i) + '.ghtml')
 
     def parse(self,response):
         for post in response.css('div.bastian-feed-item'):
             link_notice = post.css("a.feed-post-link::attr(href)").extract_first()
             yield response.follow(link_notice, self.parse_news)
 
-        next_page = response.css('div.load-more a::attr(href)').extract_first()
-        if next_page is not None:
-            yield response.follow(next_page, self.parse)
+        # next_page = response.css('div.load-more a::attr(href)').extract_first()
+        # if next_page is not None:
+        #     yield response.follow(next_page, self.parse)
 
 
     def parse_news(self,response):  
