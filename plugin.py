@@ -124,7 +124,10 @@ def get_notices():
     for s in sims:
         if s[1] > 0.5:
             results.append([notices[s[0]]['title'],notices[s[0]]['link']])
-    return jsonify({'url': results})
+    if (len(results) > 0):
+        return jsonify({'url': results})
+    else:
+        return jsonify({'url': []})
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0")
