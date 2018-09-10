@@ -123,7 +123,10 @@ def get_notices():
     results =[]
     for s in sims:
         if s[1] > 0.5:
-            results.append([notices[s[0]]['title'],notices[s[0]]['link']])
+            try:
+                results.append([notices[s[0]]['title'],notices[s[0]]['link']])
+            except:
+                pass
     if (len(results) > 0):
         return jsonify({'url': results})
     else:
