@@ -61,7 +61,8 @@ def get_notices():
     for s in sims:
         if s[1] > 0.5:
             try:
-                results.append([notices[s[0]]['title'],notices[s[0]]['link']])
+                results.append([notices[s[0]]['title'],notices[s[0]]['link'],
+                notices[s[0]]['website'], notices[s[0]]['date']])
             except:
                 pass
     if (len(results) > 0):
