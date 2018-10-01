@@ -10,12 +10,12 @@ notices,body = [],[]
 BASEDIR = os.getcwd()
 format = "%d/%m/%Y"
 FILTER_DEFAULT_DAYS = 7
-DataUtility.open_file('blasting2.jl', notices,format)
-DataUtility.open_file('uol2.jl',notices,format)
-DataUtility.open_file('globo2.jl', notices,format)
+DataUtility.open_file('blasting.jl', notices,format)
+DataUtility.open_file('uol.jl',notices,format)
+DataUtility.open_file('globo.jl', notices,format)
 
-# notices = list(filter(lambda x: DataUtility.date_calculate(x['date']) <= FILTER_DEFAULT_DAYS , notices))
-# notices = sorted(notices, key = lambda x: x['date'],reverse=True)
+notices = list(filter(lambda x: DataUtility.date_calculate(x['date']) <= FILTER_DEFAULT_DAYS , notices))
+notices = sorted(notices, key = lambda x: x['date'],reverse=True)
 body = []
 body.extend([re.sub('\xa0','',notice['article']) for notice in notices])
 

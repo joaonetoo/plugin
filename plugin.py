@@ -7,10 +7,26 @@ from nltk.tokenize import word_tokenize
 from datetime import date,datetime
 from nltk.stem.snowball import SnowballStemmer
 import unicodedata
-from utils import DataUtility
+from scripts.utils import DataUtility
+from scripts.models import db
 
 app = Flask(__name__)
+
+POSTGRES = {
+    'user': 'postgres',
+    'pw': 'postgres',
+    'db': 'notice',
+    'host': 'localhost',
+    'port': '5432',
+}
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:\
+%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
+db.app = app
 CORS(app)
+
 
 @app.route("/")
 def hello():
@@ -72,4 +88,5 @@ def get_notices():
 
 
 if __name__ == '__main__':
+    app.config['DEBUG'] = True
     app.run(host="0.0.0.0")

@@ -2,6 +2,7 @@
 import scrapy,re
 from scrapy.utils.markup import remove_tags,remove_tags_with_content
 from datetime import date,datetime
+from news.items import NewsItem
 
 class UolSpider(scrapy.Spider):
     name = "uol"
@@ -43,12 +44,10 @@ class UolSpider(scrapy.Spider):
         else:
             date = None
 
-        yield {
-            'title': response.css("div.header > h1::text").extract_first(),
-            'article': body_article,
-            'date': date,
-            'link': response.url,
-            'website': 'uol'
-
-        }
+        title = response.css("div.header > h1::text").extract_first()
+        article = body_article
+        date = date
+        link = response.url
+        website = 'uol'
+        yield NewsItem(title = title, article = article, date = date, link = link, website = website)
 

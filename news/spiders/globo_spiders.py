@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy,re
 from scrapy.utils.markup import remove_tags
+from news.items import NewsItem
 
 class GloboSpider(scrapy.Spider):
     name = "globo"
@@ -55,12 +56,12 @@ class GloboSpider(scrapy.Spider):
         else:
             date = None
 
-        yield {
-            'article': article_body,
-            'subtitle': response.css("h2.content-head__subtitle::text").extract_first(),
-            'title': response.css("h1.content-head__title::text").extract_first(),
-            'date': date,
-            'link': response.url,
-            'website': 'globo'
-        }
+        article = article_body
+        # subtitle = response.css("h2.content-head__subtitle::text").extract_first()
+        title = response.css("h1.content-head__title::text").extract_first()
+        date = date,
+        link = response.url,
+        website = 'globo'
+        yield NewsItem(title = title, article = article, date = date, link = link, website = website)
+
 

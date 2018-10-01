@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy, re
 from scrapy.utils.markup import remove_tags,remove_tags_with_content,replace_escape_chars
-
+from news.items import NewsItem
 class BlastingSpider(scrapy.Spider):
 
     name = "blasting"
@@ -34,11 +34,12 @@ class BlastingSpider(scrapy.Spider):
         article = remove_tags(article)
         article = replace_escape_chars(article, which_ones = ('\n'))
         article = re.sub(r'http\S+','', article).strip()
-        yield {
-            'article': article,
-            'subtitle': subtitle,
-            'title': title,
-            'date': date,
-            'link': response.url,
-            'website': 'blasting'
-        }
+        
+        article = article
+        # subtitle = subtitle
+        title = title
+        date = date
+        link = response.url
+        website = 'blasting'
+        yield NewsItem(title = title, article = article, date = date, link = link, website = website)
+
