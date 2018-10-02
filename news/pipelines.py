@@ -21,6 +21,6 @@ class NewsPipeline(object):
         self.connection.close()
 
     def process_item(self, item, spider):
-        self.cur.execute("insert into news(title,article,date,link,website) values(%s,%s,%s,%s,%s)",(item['article'],item['title'],item['date'],item['link'],item['website']))
+        self.cur.execute("insert into news(title,article,date,link,website) values(%s,%s,%s,%s,%s)",(item['title'],item['article'],item['date'],item['link'],item['website']))
         self.connection.commit()
         return item
