@@ -1,9 +1,10 @@
 import gensim, nltk, re, json, os
 from gensim import corpora,similarities, models
 from nltk.tokenize import word_tokenize
-from datetime import date,datetime
+from datetime import date, datetime
 from nltk.stem.snowball import SnowballStemmer
 import unicodedata
+FILTER_DEFAULT_DAYS = 7
 
 class DataUtility(object):
 
@@ -43,3 +44,15 @@ class DataUtility(object):
                     filtered_tokens.append(token)
             documents.append(filtered_tokens)
         return documents
+    
+    @staticmethod
+    def date_increase(dateNotice, format="%d/%m/%Y"):    
+        dateNotice = datetime.strptime(dateNotice, format).date()
+        future = date.fromordinal(dateNotice.toordinal() + FILTER_DEFAULT_DAYS)
+        return future
+
+    @staticmethod
+    def date_decrease(dateNotice, format="%d/%m/%Y"):    
+        dateNotice = datetime.strptime(dateNotice, format).date()
+        past = date.fromordinal(dateNotice.toordinal() - FILTER_DEFAULT_DAYS)
+        return past

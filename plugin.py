@@ -8,8 +8,8 @@ from datetime import date,datetime
 from nltk.stem.snowball import SnowballStemmer
 import unicodedata
 from scripts.utils import DataUtility
-from scripts.models import db
-
+from scripts.models import db, News
+# News.query.filter(News.article == None).all()
 app = Flask(__name__)
 
 POSTGRES = {
@@ -35,17 +35,8 @@ def hello():
 @app.route('/notices', methods=['GET'])
 def get_notices():
     notices = []
-    format = "%d/%m/%Y"
-    FILTER_DEFAULT_DAYS = 7
-    DataUtility.open_file('blasting.jl', notices,format)
-    DataUtility.open_file('uol.jl',notices,format)
-    DataUtility.open_file('globo.jl', notices,format)
-
     BASEDIR = os.getcwd()
-    dictionary = corpora.Dictionary.load(BASEDIR+"/notices_dict.dict")
-    corpus = corpora.MmCorpus(BASEDIR+"/notices_corpus.mm")
-    lsi = models.LsiModel.load(BASEDIR+"/model_notices.lsi")
-    index = similarities.Similarity.load(BASEDIR+"/model_similarity.index")
+
     url = request.args.get('site')
 
     body_notice =[]
@@ -63,7 +54,28 @@ def get_notices():
     with open('notice.jl','r') as f:
         for line in f:
             notice = json.loads(line)
+    start = DataUtility.date_increase(notice['date'])
+    
+    end = DataUtility.date_decrease(notice['date'])
+    
+    notices = News.query.filter(News.date >= end).filter(News.date <= start).all()
+    
+    body = list(map(lambda x: x.article , notices))
+    print(len(body))
+    documents = DataUtility.pre_processing_data(body)
 
+    dictionary = corpora.Dictionary(documents)
+
+    corpus = [dictionary.doc2bow(document) for document in documents]
+
+    tf_idf = models.TfidfModel(corpus)
+
+    corpus_tfidf = tf_idf[corpus]
+
+    lsi = gensim.models.LsiModel(corpus_tfidf, id2word=dictionary)
+    
+    index = similarities.Similarity(BASEDIR+"/index",lsi[corpus],num_features=len(dictionary),num_best=10)
+    
     body_notice = [re.sub('\xa0','',notice['article'])]
 
     documents_notice = DataUtility.pre_processing_data(body_notice)
