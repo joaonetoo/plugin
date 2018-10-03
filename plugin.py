@@ -61,7 +61,7 @@ def get_notices():
     notices = News.query.filter(News.date >= end).filter(News.date <= start).all()
     
     body = list(map(lambda x: x.article , notices))
-    print(len(body))
+    
     documents = DataUtility.pre_processing_data(body)
 
     dictionary = corpora.Dictionary(documents)
@@ -85,12 +85,13 @@ def get_notices():
     vec_lsi = lsi[corpus_notice[0]] 
    
     sims = index[vec_lsi]
+    print(sims)
     results = []
     for s in sims:
         if s[1] > 0.5:
             try:
-                results.append([notices[s[0]]['title'],notices[s[0]]['link'],
-                notices[s[0]]['website'], notices[s[0]]['date']])
+                results.append([notices[s[0]].title,notices[s[0]].link,
+                notices[s[0]].website, notices[s[0]].date])
             except:
                 pass
     if (len(results) > 0):
