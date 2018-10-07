@@ -11,4 +11,5 @@ class News(db.Model):
     date = db.Column(db.DateTime())
     link = db.Column(db.String)
     website = db.Column(db.String)
+    processed = db.Column(db.ARRAY(db.String))
 

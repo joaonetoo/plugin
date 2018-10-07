@@ -34,7 +34,7 @@ class DataUtility(object):
 
         regex = "[a-zA-ZçÇãÃõÕáÁéÉíÍóÓúÚâÂêÊîÎôÔûÛàÀ]+"
 
-        documents_without_stopwords = [[stemmer.stem(DataUtility.remover_combinantes(w.lower())) for w in word_tokenize(text) if w.lower() not in stopwords] 
+        documents_without_stopwords = [[w.lower() for w in word_tokenize(text) if w.lower() not in stopwords] 
                     for text in body]
         documents = []
         for document in documents_without_stopwords:
@@ -44,6 +44,19 @@ class DataUtility(object):
                     filtered_tokens.append(token)
             documents.append(filtered_tokens)
         return documents
+    
+    @staticmethod
+    def pre_processing(body):
+        stopwords = nltk.corpus.stopwords.words("portuguese")
+
+        regex = "[a-zA-ZçÇãÃõÕáÁéÉíÍóÓúÚâÂêÊîÎôÔûÛàÀ]+"
+
+        document = [DataUtility.remover_combinantes(w.lower()) for w in word_tokenize(body) if  w.lower() not in stopwords] 
+        filtered_tokens = []
+        for token in document:
+            if re.search(regex, token):
+                filtered_tokens.append(token)
+        return filtered_tokens
     
     @staticmethod
     def date_increase(dateNotice, format="%d/%m/%Y"):    

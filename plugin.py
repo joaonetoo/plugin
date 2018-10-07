@@ -11,12 +11,11 @@ from scripts.utils import DataUtility
 from scripts.models import db, News
 # News.query.filter(News.article == None).all()
 app = Flask(__name__)
-
 POSTGRES = {
-    'user': 'postgres',
-    'pw': 'postgres',
-    'db': 'notice',
-    'host': 'localhost',
+    'user': os.environ.get("USER_POSTGRES"),
+    'pw': os.environ.get("PASS_POSTGRES"),
+    'db': os.environ.get("DB_NAME"),
+    'host': os.environ.get("HOST_DB"),
     'port': '5432',
 }
 
@@ -60,10 +59,8 @@ def get_notices():
     
     notices = News.query.filter(News.date >= end).filter(News.date <= start).all()
     
-    body = list(map(lambda x: x.article , notices))
+    documents = list(map(lambda x: x.processed , notices))
     
-    documents = DataUtility.pre_processing_data(body)
-
     dictionary = corpora.Dictionary(documents)
 
     corpus = [dictionary.doc2bow(document) for document in documents]
@@ -94,7 +91,8 @@ def get_notices():
                 notices[s[0]].website, notices[s[0]].date])
             except:
                 pass
-    if (len(results) > 0):
+    if (len(results) > 1):
+        result.pop(0)
         return jsonify({'url': results})
     else:
         return jsonify({'url': []})
