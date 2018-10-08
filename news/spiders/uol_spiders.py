@@ -6,6 +6,11 @@ from news.items import NewsItem
 
 class UolSpider(scrapy.Spider):
     name = "uol"
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'news.pipelines.NewsPipeline': 300,
+        }
+    }
     start_urls =['https://noticias.uol.com.br/noticias']
 
     def parse(self,response):

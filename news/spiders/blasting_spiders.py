@@ -5,6 +5,12 @@ from news.items import NewsItem
 class BlastingSpider(scrapy.Spider):
 
     name = "blasting"
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'news.pipelines.NewsPipeline': 300,
+        }
+    }
+
     start_urls = ['https://br.blastingnews.com/brasil/p/2/',
     'https://br.blastingnews.com/economia/p/2/',
     'https://br.blastingnews.com/cultura/p/2/',

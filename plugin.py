@@ -92,7 +92,7 @@ def get_notices():
             except:
                 pass
     if (len(results) > 1):
-        result.pop(0)
+        results.pop(0)
         return jsonify({'url': results})
     else:
         return jsonify({'url': []})

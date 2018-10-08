@@ -6,6 +6,12 @@ from news.items import NewsItem
 class GloboSpider(scrapy.Spider):
     name = "globo"
     start_urls =[]
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'news.pipelines.NewsPipeline': 300,
+        }
+    }
+
     # custom_settings = {
     #     # https://github.com/alecxe/scrapy-fake-useragent
     #     "RANDOM_UA_PER_PROXY": True,
