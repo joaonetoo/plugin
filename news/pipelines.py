@@ -11,10 +11,10 @@ from scripts.utils import DataUtility
 class NewsPipeline(object):
     
     def open_spider(self, spider):
-        hostname = os.environ.get("HOST_DB")
-        username = os.environ.get("USER_POSTGRES")
-        password = os.environ.get("PASS_POSTGRES")
-        database = os.environ.get("DB_NAME")
+        hostname = 'localhost'
+        username = 'postgres'
+        password = 'postgres'
+        database = 'notice'
         self.connection = psycopg2.connect(host=hostname, user=username, password=password, dbname=database)
         self.cur = self.connection.cursor()
 

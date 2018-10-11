@@ -12,10 +12,10 @@ from scripts.models import db, News
 # News.query.filter(News.article == None).all()
 app = Flask(__name__)
 POSTGRES = {
-    'user': os.environ.get("USER_POSTGRES"),
-    'pw': os.environ.get("PASS_POSTGRES"),
-    'db': os.environ.get("DB_NAME"),
-    'host': os.environ.get("HOST_DB"),
+    'user': 'postgres',
+    'pw': 'postgres',
+    'db': 'notice',
+    'host': 'localhost',
     'port': '5432',
 }
 
@@ -84,14 +84,19 @@ def get_notices():
     sims = index[vec_lsi]
     print(sims)
     results = []
+    results2 =[]
     for s in sims:
         if s[1] > 0.5:
             try:
                 results.append([notices[s[0]].title,notices[s[0]].link,
                 notices[s[0]].website, notices[s[0]].date])
+                results2.append({'id': notices[s[0]].id, 'link': notices[s[0]].link, 'value': s[1] })
             except:
                 pass
     if (len(results) > 1):
+        with open("notice.json", 'w',encoding='utf8') as outfile:
+            json.dump({notice['link']: json.dumps(results2)},outfile, ensure_ascii=False)
+
         results.pop(0)
         return jsonify({'url': results})
     else:
