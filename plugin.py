@@ -96,8 +96,8 @@ def get_notices():
     if (len(results) > 1):
         with open("notice.json", 'w',encoding='utf8') as outfile:
             json.dump({notice['link']: json.dumps(results2)},outfile, ensure_ascii=False)
-
-        results.pop(0)
+        if (results[0][0] == notice['title']):
+            results.pop(0)
         return jsonify({'url': results})
     else:
         return jsonify({'url': []})
